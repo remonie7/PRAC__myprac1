@@ -14,6 +14,7 @@ public class User {
 	@Column(nullable=false, length=20, unique=true)
 	private String userId;
 	
+
 	private String userPassword;
 	private String userName;
 	private String userEmail;
@@ -28,6 +29,9 @@ public class User {
 		return newId.equals(id);
 	}
 
+	public String getUserId() {
+		return userId;
+	}
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
