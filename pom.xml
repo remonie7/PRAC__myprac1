@@ -12,6 +12,8 @@
 	<groupId>net.myprac1</groupId>
 	<artifactId>myprac1</artifactId>
 	<version>1.0</version>
+	<packaging>war</packaging>
+	
 	<name>myprac1</name>
 	<description>myprac1 QNA</description>
 
@@ -27,6 +29,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
