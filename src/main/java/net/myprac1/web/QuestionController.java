@@ -33,7 +33,7 @@ public class QuestionController {
 			return "redirect:/users/loginForm";
 		}		
 		User sessionUser = HttpSessionUtils.getUserFromSession(session);	
-		Question newQuestion = new Question(sessionUser.getUserId(), title, contents);
+		Question newQuestion = new Question(sessionUser, title, contents);
 		questionRepository.save(newQuestion);
 		return "redirect:/";
 	}
