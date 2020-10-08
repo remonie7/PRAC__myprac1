@@ -40,5 +40,10 @@ public class Question {
 		if(createDate == null) return "";
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
 	}
+
+	public void update(String title2, String contents2) {
+		title = title2;
+		contents = contents2;
+	}
 	
 }
