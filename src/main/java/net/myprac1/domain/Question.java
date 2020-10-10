@@ -35,7 +35,7 @@ public class Question {
 		this.contents = contents;
 		this.createDate = LocalDateTime.now();
 	}	
-	
+
 	public String getFormattedCreateDate() {
 		if(createDate == null) return "";
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
@@ -50,7 +50,4 @@ public class Question {
 		return this.writer.equals(loginUser);
 	}
 
-
-	
-	
 }
