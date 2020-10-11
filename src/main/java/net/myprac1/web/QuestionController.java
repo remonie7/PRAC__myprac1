@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import net.myprac1.domain.Question;
 import net.myprac1.domain.QuestionRepository;
+import net.myprac1.domain.Result;
 import net.myprac1.domain.User;
 
 @Controller
@@ -50,73 +51,71 @@ public class QuestionController {
 	
 	@GetMapping("/{id}/form")
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-
-		try {
-			Question question = questionRepository.findById(id).get();
-			hasPermission(session, question);
-			model.addAttribute("question", question);
-			return "/qna/updateForm";
-		} catch (IllegalStateException e) {
-			System.out.println("오류메세지 발생");
-			model.addAttribute("errorMessage", e); //이게 안담기는 것 같다 더 알아보자
+		Question question = questionRepository.findById(id).get();
+		Result result = valid(session, question);
+		if(!result.isValid()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
 			return "redirect:/users/loginForm";
-		}		
+		}
+
+		model.addAttribute("question", question);
+		return "/qna/updateForm";
+	
 
 	}
-	
-	
-	//글 수정삭제 권한 있는지 알아오는 메소드
+	//글 수정삭제 권한 있는지 알아오는 메소드(별도 클래스 사용시)
+	private Result valid(HttpSession session, Question question) {
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		if(!HttpSessionUtils.isLoginUser(session)) {
+			return Result.fail("로그인이 필요합니다.");
+		}	
+		if(!question.isSameWriter(loginUser)) {			
+			return Result.fail("자신이 쓴 글만 수정, 삭제가 가능합니다.");
+		}
+		return Result.ok();
+	}
+	//글 수정삭제 권한 있는지 알아오는 메소드(exception 사용시)
 	private boolean hasPermission(HttpSession session, Question question) {
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		if(!HttpSessionUtils.isLoginUser(session)) {
 			throw new IllegalStateException("로그인이 필요합니다");
 
 		}	
-		else if(!question.isSameWriter(loginUser)) {			
+		if(!question.isSameWriter(loginUser)) {			
 			throw new IllegalStateException("자신이 쓴 글만 수정, 삭제가 가능합니다.");
 
 		}
-		else {
-				return true;
-		}
 
-
-
-		
-
+		return true;
 	}
 	
 	
 	
 	@PutMapping("/{id}")
 	public String update(@PathVariable Long id, String title, String contents, Model model, HttpSession session) {
-		try {
-			Question question = questionRepository.findById(id).get();
-			hasPermission(session, question);
-			question.update(title, contents);
-			questionRepository.save(question);
-			return String.format("redirect:/questions/%d", id);
-		} catch (IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
+		Question question = questionRepository.findById(id).get();
+		Result result = valid(session, question);
+		if(!result.isValid()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
 			return "redirect:/users/loginForm";
-		}	
+		}
 		
-
+		question.update(title, contents);
+		questionRepository.save(question);
+		return String.format("redirect:/questions/%d", id);
 
 	}
 	
 	@DeleteMapping("/{id}")
 	public String delete(@PathVariable Long id, Model model, HttpSession session) {
-		try {
-			Question question = questionRepository.findById(id).get();
-			hasPermission(session, question);
-			questionRepository.deleteById(id);
-			return "redirect:/";
-		} catch (IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
+		Question question = questionRepository.findById(id).get();
+		Result result = valid(session, question);
+		if(!result.isValid()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
 			return "redirect:/users/loginForm";
 		}
-		
+		questionRepository.deleteById(id);
+		return "redirect:/";		
 
 	}
 	
