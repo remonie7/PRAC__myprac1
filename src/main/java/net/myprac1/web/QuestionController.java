@@ -57,7 +57,8 @@ public class QuestionController {
 			model.addAttribute("question", question);
 			return "/qna/updateForm";
 		} catch (IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
+			System.out.println("오류메세지 발생");
+			model.addAttribute("errorMessage", e); //이게 안담기는 것 같다 더 알아보자
 			return "redirect:/users/loginForm";
 		}		
 
@@ -66,16 +67,23 @@ public class QuestionController {
 	
 	//글 수정삭제 권한 있는지 알아오는 메소드
 	private boolean hasPermission(HttpSession session, Question question) {
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		if(!HttpSessionUtils.isLoginUser(session)) {
 			throw new IllegalStateException("로그인이 필요합니다");
-		}	
-		User loginUser = HttpSessionUtils.getUserFromSession(session);
 
-		if(!question.isSameWriter(loginUser)) {
+		}	
+		else if(!question.isSameWriter(loginUser)) {			
 			throw new IllegalStateException("자신이 쓴 글만 수정, 삭제가 가능합니다.");
+
 		}
+		else {
+				return true;
+		}
+
+
+
 		
-		return true;
+
 	}
 	
 	
